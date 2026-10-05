@@ -1,0 +1,8 @@
+.venv/
+.cache/
+outputs/
+assets/downloads/
+__pycache__/
+*.pyc
+assets/*.mp4
+assets/.cache/

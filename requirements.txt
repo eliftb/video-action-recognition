@@ -1,0 +1,10 @@
+torch>=2.0
+torchvision>=0.15,<0.17   # pytorchvideo 0.1.5 imports a module removed in torchvision 0.17
+pytorchvideo==0.1.5
+transformers>=4.40
+opencv-python>=4.8
+matplotlib>=3.5
+numpy<2
+psutil
+pytest
+# optional: yt-dlp (for --url with YouTube links)
