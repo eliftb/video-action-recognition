@@ -9,6 +9,8 @@ summary figure plus an annotated copy of the video.
     python demo.py --video assets/eating_spaghetti.mp4
     python demo.py --url https://www.youtube.com/watch?v=...   # needs yt-dlp
     python demo.py --models videomae i3d --no-benchmark
+
+For a live camera, see webcam.py.
 """
 
 import argparse
@@ -97,7 +99,7 @@ def main():
     src = parser.add_mutually_exclusive_group()
     src.add_argument("--video", nargs="+", type=Path, help="local video file(s)")
     src.add_argument("--url", help="direct video link or YouTube URL (needs yt-dlp)")
-    parser.add_argument("--models", nargs="+", choices=list(MODELS), default=DEFAULT_ORDER)
+    parser.add_argument("--models", nargs="+", choices=DEFAULT_ORDER, default=DEFAULT_ORDER)
     parser.add_argument("--device", choices=["cuda", "cpu"], default=None)
     parser.add_argument("--half", action="store_true", help="fp16 inference on GPU")
     parser.add_argument("--no-benchmark", action="store_true", help="skip timing runs")

@@ -18,6 +18,7 @@ MODEL_COLORS = {
     "VideoMAE-B": "#eb6834",
     "TimeSformer-B": "#1baf7a",
     "I3D R50": "#eda100",
+    "TimeSformer K600": "#9b6bdf",
 }
 INK = "#0b0b0b"
 INK_SECONDARY = "#52514e"

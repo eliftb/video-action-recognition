@@ -34,7 +34,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("root", type=Path)
-    parser.add_argument("--models", nargs="+", choices=list(MODELS), default=DEFAULT_ORDER)
+    parser.add_argument("--models", nargs="+", choices=DEFAULT_ORDER, default=DEFAULT_ORDER)
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = parser.parse_args()
 

@@ -50,16 +50,40 @@ birden çok klip ve kırpma alınarak hesaplanmıştır; bu demo tek bir merkez 
 kullandığı için birkaç puan daha düşük sonuç beklenmelidir. Kendi etiketli
 videolarınızda doğruluğu ölçmek için `python evaluate.py data/eval` kullanın.
 
+## Gerçek zamanlı kamera modu
+
+```bash
+python webcam.py                          # 0 numaralı kamera, beş model yan yana
+python webcam.py --models videomae        # tek model: ilk 3 sınıf, güven çubuklarıyla
+python webcam.py --source 1               # başka bir kamera
+python webcam.py --source assets/archery.mp4   # kamera yoksa: bir videoyu döngüde oynatır
+python webcam.py --record outputs/live.mp4     # ekrandaki görüntüyü de kaydeder
+```
+
+Çıkmak için `q` ya da `Esc`.
+
+Kameradan gelen son birkaç saniyelik görüntü bir tamponda tutulur. Arka plandaki bir iş parçacığı
+sürekli en yeni pencereyi alıp modelleri çalıştırır; görüntü ana iş parçacığında çizildiği için
+modeller çalışırken de akıcı kalır. Her model kendi doğal süresine (yaklaşık 2,1 sn) bakar, bu süre
+en fazla 3 saniyedir (`--max-window`). Etiket titremesin diye olasılıkların art arda pencereler
+üzerinden ortalaması alınır (`--smoothing`). %30'un altındaki tahminler soluk yazılır.
+
+Hareketi değiştirdikten sonra etiketin 2-3 saniye içinde değişmesi beklenir, çünkü pencerenin yeni
+hareketle dolması gerekir. Dört karşılaştırma modeli yalnızca 400 Kinetics sınıfını bilir (örneğin su içme, alkışlama,
+baş sallama, şınav, gitar çalma, diş fırçalama). Kamera modunda beşinci bir model daha çalışır:
+Kinetics-600 ile eğitilmiş TimeSformer (`--models timesformer-k600`). 600 sınıfı arasında Kinetics-400'de
+olmayan "waving hand" (el sallama) gibi gündelik hareketler vardır. Her model, hiçbir şey yapılmasa
+bile kendi sınıflarından birini seçer.
+
 ## Testler
 
 ```bash
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests
 ```
 
-Testler model ağırlıklarına ihtiyaç duymaz.
+Testler model ağırlıklarına ve kameraya ihtiyaç duymaz.
 
 ## Yol haritası
 
-- Web kamerasıyla gerçek zamanlı tahmin
 - GitHub Actions CI
 - Kinetics-400 doğrulama alt kümesinde `evaluate.py` ile ölçülmüş doğruluk

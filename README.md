@@ -37,6 +37,29 @@ Outputs go to `outputs/`:
 - `<video>_annotated.mp4`: the video with every model's top-1 prediction overlaid
 - `<video>_report.json`: all predictions and metrics as machine-readable data
 
+## Real-time webcam mode
+
+```bash
+python webcam.py                          # camera 0, all five models side by side
+python webcam.py --models videomae        # one model: top-3 classes with confidence bars
+python webcam.py --source 1               # another camera
+python webcam.py --source assets/archery.mp4   # no camera: loop a file through the same pipeline
+python webcam.py --record outputs/live.mp4     # also save the annotated picture
+```
+
+Press `q` or `Esc` to quit.
+
+How it works:
+- The last few seconds of camera frames are kept in a buffer with their timestamps.
+- A background thread keeps taking the newest window from the buffer and runs each model on it. Frames are picked by timestamp, so the clip has the right speed whatever frame rate the camera delivers.
+- Each model sees its native time span (about 2.1 s), capped at 3 s (`--max-window`). The cap only affects TimeSformer, whose native span is 8.5 s, which is too slow to follow a change of action.
+- Class probabilities are averaged over consecutive windows (`--smoothing`) so the label does not flicker. Predictions under 30% are drawn dimmed.
+- The picture is drawn by the main thread, so it stays smooth while the models run.
+
+With all five models on the RTX 4060 Laptop GPU, each prediction refreshes about 3 times per second; VideoMAE alone refreshes about 10 times per second. After you change action, expect the label to follow in about 2 to 3 seconds, because the window has to fill with the new action.
+
+The four comparison models know only the 400 Kinetics classes (for example drinking, clapping, shaking head, push up, playing guitar, brushing teeth). The webcam mode adds a fifth model, TimeSformer trained on Kinetics-600 (`--models timesformer-k600`), because its 600 classes include everyday gestures that Kinetics-400 lacks, such as "waving hand". Every model always picks one of its classes, even when nothing is happening.
+
 ## Pipeline
 
 ```
@@ -111,7 +134,7 @@ Tip: run `python demo.py` once before presenting so the weights are cached and t
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests   # the env var is only needed if ROS is installed
 ```
 
-The tests cover clip sampling, tensor shapes and normalisation for every model, the SlowFast pathway split, and the label mapping. They do not need the model weights.
+The tests cover clip sampling, tensor shapes and normalisation for every model, the SlowFast pathway split, the label mapping, and the live mode's frame buffer, time-based sampling, smoothing and overlay. They do not need the model weights or a camera.
 
 ## Sample videos
 
@@ -121,6 +144,5 @@ The sample videos are not stored in the repo. They are downloaded into `assets/`
 
 ## Roadmap
 
-- Real-time webcam mode with a sliding window of frames
 - GitHub Actions CI
 - Top-1 accuracy measured with `evaluate.py` on a Kinetics-400 validation subset

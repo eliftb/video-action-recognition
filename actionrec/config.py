@@ -96,9 +96,27 @@ MODELS = {
         k400_top1=77.9, k400_top5=93.2,
         accuracy_source="facebookresearch/TimeSformer model zoo, 8x32, 1x3 views",
     ),
+    # Same architecture trained on Kinetics-600. Its 600 classes include everyday
+    # gestures missing from Kinetics-400 (e.g. "waving hand"), which matters in
+    # front of a webcam. Not comparable class-for-class with the four above.
+    "timesformer-k600": ModelSpec(
+        key="timesformer-k600",
+        display_name="TimeSformer K600",
+        source="huggingface",
+        checkpoint="facebook/timesformer-base-finetuned-k600",
+        num_frames=8, sampling_rate=32,
+        short_side=224, crop_size=224,
+        mean=KINETICS_MEAN, std=KINETICS_STD,
+        k400_top1=float("nan"), k400_top5=float("nan"),   # trained on K600, no K400 score
+        accuracy_source="Kinetics-600 model: 79.1 / 94.4 top-1 / top-5 on K600 "
+                        "(facebookresearch/TimeSformer model zoo)",
+    ),
 }
 
+# The four Kinetics-400 models compared by demo.py.
 DEFAULT_ORDER = ["slowfast", "videomae", "timesformer", "i3d"]
+# The webcam adds the Kinetics-600 model for its wider set of everyday actions.
+LIVE_ORDER = DEFAULT_ORDER + ["timesformer-k600"]
 
 # Public sample clips, downloaded on first use instead of shipped in the repo.
 SAMPLE_VIDEOS = {
