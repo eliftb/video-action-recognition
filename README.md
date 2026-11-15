@@ -107,16 +107,39 @@ Predictions:
 
 Your timings will differ by GPU. Re-run `python demo.py` to measure on your own hardware.
 
-### About the accuracy column
+### Measured accuracy
 
-The accuracy numbers come from published sources and were **not measured by this project**:
+Measured with `evaluate.py` on 1000 Kinetics-400 validation videos (part 0 of the 20 official archives, 360 of the 400 classes), one centre clip per video:
+
+| Model | Measured top-1 | Measured top-5 | Published top-1 |
+|---|---|---|---|
+| SlowFast R50 | 69.0% | 89.3% | 76.9% |
+| VideoMAE-B | 77.0% | 92.9% | 80.9% |
+| TimeSformer-B | 77.5% | 93.2% | 77.9% |
+| I3D R50 | 64.3% | 86.0% | 73.3% |
+
+How to read this:
+- With 1000 videos the margin of error is about ±3 points, so VideoMAE and TimeSformer are tied here, while both are clearly ahead of SlowFast and I3D.
+- The measured numbers are below the published ones because the published ones average several clips and crops per video (see below) and this project looks at one clip. The gap is largest for the two CNNs, whose published scores use 30 views, and smallest for TimeSformer, which uses 3.
+- TimeSformer's single clip spans 8.5 s, almost the whole 10 s video; the other models see about 2 s from the middle.
+
+To reproduce:
+
+```bash
+python tools/k400_val_subset.py     # downloads 1.5 GB into data/, sorts videos by class
+python evaluate.py data/eval        # about 14 minutes on the RTX 4060 Laptop GPU
+```
+
+### About the published accuracy column
+
+The published numbers in the tables and in the summary figure come from these sources and were **not measured by this project**:
 - SlowFast and I3D: the [PyTorchVideo model zoo](https://github.com/facebookresearch/pytorchvideo/blob/main/docs/source/model_zoo.md), 8×8 clips, 3×10 views
 - VideoMAE: the [Hugging Face model card](https://huggingface.co/MCG-NJU/videomae-base-finetuned-kinetics)
 - TimeSformer: the [official model zoo](https://github.com/facebookresearch/TimeSformer), 8×32 clips, 1×3 views
 
 Those numbers average predictions over several clips and crops. This demo uses a
-single centre clip, so you should expect a few points lower. To measure accuracy
-yourself, put videos in `data/eval/<kinetics class name>/` and run `python evaluate.py data/eval`.
+single centre clip, which is why the measured numbers above are lower. To measure on
+your own videos, put them in `data/eval/<kinetics class name>/` and run `python evaluate.py data/eval`.
 
 Two side notes. A confidence score is not accuracy: VideoMAE is usually less
 confident than the others even when it is correct. Fps is also not a single
@@ -150,6 +173,3 @@ The sample videos are not stored in the repo. They are downloaded into `assets/`
 - `archery.mp4`: PyTorchVideo tutorial clip (`dl.fbaipublicfiles.com/pytorchvideo/projects/archery.mp4`)
 - `eating_spaghetti.mp4`: Hugging Face `nielsr/video-demo` dataset, used in the transformers docs
 
-## Roadmap
-
-- Top-1 accuracy measured with `evaluate.py` on a Kinetics-400 validation subset

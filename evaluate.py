@@ -53,21 +53,31 @@ def main():
 
     models = load_models(args.models, device=args.device)
     hits = {k: {"top1": 0, "top5": 0} for k in args.models}
+    unreadable = []
     for i, (path, label) in enumerate(samples, 1):
-        frames, _ = read_video(path)
+        try:
+            frames, _ = read_video(path)
+        except (ValueError, FileNotFoundError):   # truncated or corrupt download
+            unreadable.append(path)
+            continue
         for key in args.models:
             top = [normalise(lbl) for lbl in models[key].predict(frames).top_labels]
             hits[key]["top1"] += top[0] == label
             hits[key]["top5"] += label in top
         print(f"\r  {i}/{len(samples)}", end="", flush=True)
     print()
+    if unreadable:
+        print(f"skipped {len(unreadable)} unreadable videos")
+    scored = len(samples) - len(unreadable)
+    if not scored:
+        raise SystemExit("None of the videos could be decoded")
 
     results = {}
     print(f"\n{'Model':<15}{'Top-1':>8}{'Top-5':>8}")
     for key in args.models:
-        top1 = 100 * hits[key]["top1"] / len(samples)
-        top5 = 100 * hits[key]["top5"] / len(samples)
-        results[key] = {"top1": top1, "top5": top5, "n": len(samples)}
+        top1 = 100 * hits[key]["top1"] / scored
+        top5 = 100 * hits[key]["top5"] / scored
+        results[key] = {"top1": top1, "top5": top5, "n": scored}
         print(f"{MODELS[key].display_name:<15}{top1:>7.1f}%{top5:>7.1f}%")
     out = OUTPUTS_DIR / "evaluation.json"
     out.parent.mkdir(exist_ok=True)

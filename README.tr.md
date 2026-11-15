@@ -46,11 +46,26 @@ RTX 4060 Laptop GPU, fp32, batch boyutu 1, 10 çalıştırmanın ortalaması:
 | TimeSformer-B | 121.6M | 12.1 | 551 MB | 77.9% |
 | I3D R50 | 28.0M | 44.1 | 266 MB | 73.3% |
 
-Doğruluk sütunu **yayımlanmış** değerlerdir ve bu projede ölçülmemiştir.
-Kaynaklar [README.md](README.md) içinde verilmiştir. Bu değerler her videodan
-birden çok klip ve kırpma alınarak hesaplanmıştır; bu demo tek bir merkez klip
-kullandığı için birkaç puan daha düşük sonuç beklenmelidir. Kendi etiketli
-videolarınızda doğruluğu ölçmek için `python evaluate.py data/eval` kullanın.
+Bu tablodaki doğruluk sütunu **yayımlanmış** değerlerdir; kaynakları [README.md](README.md) içindedir.
+
+### Ölçülen doğruluk
+
+`evaluate.py` ile 1000 Kinetics-400 doğrulama videosunda ölçüldü (20 resmî arşivin 0. parçası,
+400 sınıfın 360'ı), her videodan tek merkez klip:
+
+| Model | Ölçülen top-1 | Ölçülen top-5 | Yayımlanan top-1 |
+|---|---|---|---|
+| SlowFast R50 | 69.0% | 89.3% | 76.9% |
+| VideoMAE-B | 77.0% | 92.9% | 80.9% |
+| TimeSformer-B | 77.5% | 93.2% | 77.9% |
+| I3D R50 | 64.3% | 86.0% | 73.3% |
+
+1000 videoda hata payı yaklaşık ±3 puandır; yani VideoMAE ile TimeSformer burada berabere, ikisi de
+SlowFast ve I3D'nin belirgin şekilde önündedir. Ölçülen değerler yayımlananlardan düşüktür, çünkü
+yayımlanan değerler her videodan birden çok klip ve kırpmanın ortalamasıdır, bu proje ise tek klibe bakar.
+
+Tekrarlamak için: `python tools/k400_val_subset.py` (1,5 GB indirir), ardından `python evaluate.py data/eval`.
+Kendi etiketli videolarınızı `data/eval/<sınıf adı>/` altına koyarak da ölçebilirsiniz.
 
 ## Gerçek zamanlı kamera modu
 
@@ -90,6 +105,3 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests
 Testler model ağırlıklarına ve kameraya ihtiyaç duymaz. GitHub Actions bunları her push ve pull request'te
 çalıştırır (Python 3.10 ve 3.12, `requirements-ci.txt` içindeki yalnızca CPU'lu PyTorch ile).
 
-## Yol haritası
-
-- Kinetics-400 doğrulama alt kümesinde `evaluate.py` ile ölçülmüş doğruluk
