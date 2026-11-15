@@ -49,6 +49,10 @@ python webcam.py --record outputs/live.mp4     # also save the annotated picture
 
 Press `q` or `Esc` to quit.
 
+![Live mode overlay with all five models](docs/webcam_live.png)
+
+*The live overlay, here with the archery sample clip looped through the pipeline (`--source assets/archery.mp4`) instead of a camera.*
+
 How it works:
 - The last few seconds of camera frames are kept in a buffer with their timestamps.
 - A background thread keeps taking the newest window from the buffer and runs each model on it. Frames are picked by timestamp, so the clip has the right speed whatever frame rate the camera delivers.

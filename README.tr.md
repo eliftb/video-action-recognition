@@ -62,6 +62,10 @@ python webcam.py --record outputs/live.mp4     # ekrandaki görüntüyü de kayd
 
 Çıkmak için `q` ya da `Esc`.
 
+![Beş modelle canlı mod ekranı](docs/webcam_live.png)
+
+*Canlı mod ekranı; burada kamera yerine okçuluk örnek videosu döngüde oynatılıyor (`--source assets/archery.mp4`).*
+
 Kameradan gelen son birkaç saniyelik görüntü bir tamponda tutulur. Arka plandaki bir iş parçacığı
 sürekli en yeni pencereyi alıp modelleri çalıştırır; görüntü ana iş parçacığında çizildiği için
 modeller çalışırken de akıcı kalır. Her model kendi doğal süresine (yaklaşık 2,1 sn) bakar, bu süre
