@@ -1,5 +1,7 @@
 # Video Action Recognition: SlowFast vs VideoMAE vs TimeSformer vs I3D
 
+[![tests](https://github.com/eliftb/video-action-recognition/actions/workflows/tests.yml/badge.svg)](https://github.com/eliftb/video-action-recognition/actions/workflows/tests.yml)
+
 [Türkçe](README.tr.md)
 
 Runs a video through four pretrained Kinetics-400 action recognition models.
@@ -140,6 +142,8 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests   # the env var is on
 
 The tests cover clip sampling, tensor shapes and normalisation for every model, the SlowFast pathway split, the label mapping, and the live mode's frame buffer, time-based sampling, smoothing and overlay. They do not need the model weights or a camera.
 
+GitHub Actions runs them on every push and pull request (Python 3.10 and 3.12, CPU-only PyTorch from `requirements-ci.txt`), and checks that the three scripts start.
+
 ## Sample videos
 
 The sample videos are not stored in the repo. They are downloaded into `assets/` the first time you run the demo:
@@ -148,5 +152,4 @@ The sample videos are not stored in the repo. They are downloaded into `assets/`
 
 ## Roadmap
 
-- GitHub Actions CI
 - Top-1 accuracy measured with `evaluate.py` on a Kinetics-400 validation subset

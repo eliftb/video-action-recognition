@@ -1,0 +1,8 @@
+# What the tests need: no model weights, no GPU, no camera.
+# torch comes from the CPU wheel index (see .github/workflows/tests.yml).
+torch==2.2.2
+numpy<2
+opencv-python-headless>=4.8
+matplotlib>=3.5
+psutil
+pytest

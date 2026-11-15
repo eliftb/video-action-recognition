@@ -1,0 +1,36 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      # CPU-only torch keeps the install small; the tests never touch a GPU.
+      - name: Install test dependencies
+        run: pip install -r requirements-ci.txt --extra-index-url https://download.pytorch.org/whl/cpu
+      - name: Run tests
+        run: python -m pytest -q tests
+      # The scripts import everything else (argparse wiring, live mode), so a
+      # broken import or flag shows up here without downloading any weights.
+      - name: Check the command-line scripts start
+        run: |
+          python demo.py --help
+          python webcam.py --help
+          python evaluate.py --help

@@ -1,5 +1,7 @@
 # Videoda Eylem Tanıma: SlowFast, VideoMAE, TimeSformer ve I3D
 
+[![tests](https://github.com/eliftb/video-action-recognition/actions/workflows/tests.yml/badge.svg)](https://github.com/eliftb/video-action-recognition/actions/workflows/tests.yml)
+
 [English](README.md)
 
 Bir videoyu Kinetics-400 ile eğitilmiş dört hazır modelden geçirir. Her modelin
@@ -85,9 +87,9 @@ bile kendi sınıflarından birini seçer.
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests
 ```
 
-Testler model ağırlıklarına ve kameraya ihtiyaç duymaz.
+Testler model ağırlıklarına ve kameraya ihtiyaç duymaz. GitHub Actions bunları her push ve pull request'te
+çalıştırır (Python 3.10 ve 3.12, `requirements-ci.txt` içindeki yalnızca CPU'lu PyTorch ile).
 
 ## Yol haritası
 
-- GitHub Actions CI
 - Kinetics-400 doğrulama alt kümesinde `evaluate.py` ile ölçülmüş doğruluk
